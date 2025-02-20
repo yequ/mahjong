@@ -1,0 +1,31 @@
+<view class="container">
+  <view class="title">四川麻将</view>
+  
+  <view class="settings-panel">
+    <view class="setting-item">
+      <text>游戏局数：</text>
+      <picker bindchange="onRoundChange" value="{{roundIndex}}" range="{{roundOptions}}">
+        <view class="picker">{{roundOptions[roundIndex]}}</view>
+      </picker>
+    </view>
+    
+    <view class="setting-item">
+      <text>底分设置：</text>
+      <picker bindchange="onBaseScoreChange" value="{{baseScoreIndex}}" range="{{baseScoreOptions}}">
+        <view class="picker">{{baseScoreOptions[baseScoreIndex]}}</view>
+      </picker>
+    </view>
+    
+    <view class="setting-item">
+      <text>庄家选择：</text>
+      <picker bindchange="onDealerChange" value="{{dealerIndex}}" range="{{dealerOptions}}">
+        <view class="picker">{{dealerOptions[dealerIndex]}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="button-group">
+    <button class="start-button" bindtap="startGame">开始游戏</button>
+    <button class="rules-button" bindtap="showRules">游戏规则</button>
+  </view>
+</view>

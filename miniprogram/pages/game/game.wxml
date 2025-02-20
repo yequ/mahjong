@@ -1,0 +1,200 @@
+<view class="game-container">
+  <!-- 游戏信息栏 -->
+  <view class="game-info">
+    <view class="status-bar">
+      <view class="status-item">
+        <text class="status-label">当前状态：</text>
+        <text class="status-value">{{stateText[gameState.phase]}}</text>
+      </view>
+      <view class="status-item">
+        <text class="status-label">当前风圈：</text>
+        <text class="status-value">{{gameState.wind}}风圈</text>
+      </view>
+      <view class="status-item">
+        <text class="status-label">剩余时间：</text>
+        <text class="status-value {{gameState.turnTimeLeft <= 3 ? 'warning' : ''}}">{{gameState.turnTimeLeft}}秒</text>
+      </view>
+    </view>
+    <view class="round-info">
+      <text>第{{currentRound}}/{{totalRounds}}局</text>
+      <text>剩余{{remainingTiles.length}}张</text>
+    </view>
+    <view class="action-info" wx:if="{{gameState.lastAction}}">
+      <text>{{gameState.lastAction}}</text>
+    </view>
+    <view class="wind-info">
+      <text>圈风：{{currentWind}}</text>
+      <text>局风：{{roundWind}}</text>
+    </view>
+  </view>
+
+  <!-- 开始游戏界面 -->
+  <view class="start-overlay" wx:if="{{gameState.phase === 'waiting'}}">
+    <view class="start-panel">
+      <view class="start-title">麻将游戏</view>
+      <view class="game-settings">
+        <view class="setting-item">
+          <text>局数：{{totalRounds}}局</text>
+        </view>
+        <view class="setting-item">
+          <text>底分：{{baseScore}}分</text>
+        </view>
+        <view class="setting-item">
+          <text>庄家：{{players[0].isDealer ? '玩家' : (players[1].isDealer ? '东家' : (players[2].isDealer ? '南家' : '西家'))}}</text>
+        </view>
+      </view>
+      <button class="start-btn" bindtap="startGame">开始游戏</button>
+      <button class="back-btn" bindtap="backToSettings">返回设置</button>
+    </view>
+  </view>
+
+  <!-- 历史记录 -->
+  <view class="history-panel" wx:if="{{showHistory}}">
+    <view class="history-title">历史记录</view>
+    <scroll-view scroll-y class="history-content">
+      <block wx:for="{{gameHistory}}" wx:key="index">
+        <view class="history-item">
+          <text class="history-player">{{item.player}}</text>
+          <text class="history-action">{{item.action}}</text>
+          <text class="history-tile">{{item.tile}}</text>
+        </view>
+      </block>
+    </scroll-view>
+    <view class="history-close" bindtap="toggleHistory">关闭</view>
+  </view>
+
+  <!-- 游戏桌面 -->
+  <view class="game-table">
+    <!-- 其他玩家区域 -->
+    <view class="other-players">
+      <view class="player player-left {{currentPlayer === 1 ? 'active' : ''}}">
+        <view class="player-info">
+          <text class="player-direction">西家</text>
+          <text class="player-name">{{players[1].name}}</text>
+          <text class="player-score">{{players[1].score}}分</text>
+          <view class="dealer-mark" wx:if="{{players[1].isDealer}}">庄</view>
+        </view>
+        <view class="tiles-container">
+          <block wx:for="{{leftPlayerTiles}}" wx:key="index">
+            <view class="tile back-tile"></view>
+          </block>
+        </view>
+        <view class="discard-area">
+          <block wx:for="{{leftPlayerDiscards}}" wx:key="index">
+            <view class="tile {{item.highlighted ? 'highlighted' : ''}}">{{item.tile}}</view>
+          </block>
+        </view>
+      </view>
+
+      <view class="player player-top {{currentPlayer === 2 ? 'active' : ''}}">
+        <view class="player-info">
+          <text class="player-direction">北家</text>
+          <text class="player-name">{{players[2].name}}</text>
+          <text class="player-score">{{players[2].score}}分</text>
+          <view class="dealer-mark" wx:if="{{players[2].isDealer}}">庄</view>
+        </view>
+        <view class="tiles-container">
+          <block wx:for="{{topPlayerTiles}}" wx:key="index">
+            <view class="tile back-tile"></view>
+          </block>
+        </view>
+        <view class="discard-area">
+          <block wx:for="{{topPlayerDiscards}}" wx:key="index">
+            <view class="tile {{item.highlighted ? 'highlighted' : ''}}">{{item.tile}}</view>
+          </block>
+        </view>
+      </view>
+
+      <view class="player player-right {{currentPlayer === 3 ? 'active' : ''}}">
+        <view class="player-info">
+          <text class="player-direction">东家</text>
+          <text class="player-name">{{players[3].name}}</text>
+          <text class="player-score">{{players[3].score}}分</text>
+          <view class="dealer-mark" wx:if="{{players[3].isDealer}}">庄</view>
+        </view>
+        <view class="tiles-container">
+          <block wx:for="{{rightPlayerTiles}}" wx:key="index">
+            <view class="tile back-tile"></view>
+          </block>
+        </view>
+        <view class="discard-area">
+          <block wx:for="{{rightPlayerDiscards}}" wx:key="index">
+            <view class="tile {{item.highlighted ? 'highlighted' : ''}}">{{item.tile}}</view>
+          </block>
+        </view>
+      </view>
+    </view>
+
+    <!-- 中央区域 -->
+    <view class="center-area">
+      <!-- 显示流局倒计时 -->
+      <view class="draw-countdown" wx:if="{{showDrawCountdown}}">
+        距离流局还剩 {{remainingTiles.length}} 张牌
+      </view>
+      
+      <!-- 历史记录按钮 -->
+      <view class="history-button" bindtap="toggleHistory">
+        历史记录
+      </view>
+    </view>
+
+    <!-- 玩家区域 -->
+    <view class="player player-self {{currentPlayer === 0 ? 'active' : ''}}">
+      <view class="player-info">
+        <text class="player-direction">南家</text>
+        <text class="player-name">{{players[0].name}}</text>
+        <text class="player-score">{{players[0].score}}分</text>
+        <view class="dealer-mark" wx:if="{{players[0].isDealer}}">庄</view>
+      </view>
+      
+      <!-- 听牌提示 -->
+      <view class="ting-tips" wx:if="{{tingTiles.length > 0}}">
+        <text>听牌：</text>
+        <view class="ting-tiles">
+          <block wx:for="{{tingTiles}}" wx:key="index">
+            <text class="ting-tile">{{item}}</text>
+          </block>
+        </view>
+      </view>
+
+      <view class="tiles-container">
+        <block wx:for="{{playerTiles}}" wx:key="index">
+          <view class="tile {{selectedTileIndex === index ? 'selected' : ''}}" 
+                bindtap="selectTile" 
+                data-index="{{index}}">{{item}}</view>
+        </block>
+      </view>
+
+      <view class="discard-area">
+        <block wx:for="{{playerDiscards}}" wx:key="index">
+          <view class="tile {{item.highlighted ? 'highlighted' : ''}}">{{item.tile}}</view>
+        </block>
+      </view>
+
+      <view class="action-buttons">
+        <button class="action-btn" bindtap="onPeng" wx:if="{{canPeng}}">碰</button>
+        <button class="action-btn" bindtap="onGang" wx:if="{{canGang}}">杠</button>
+        <button class="action-btn" bindtap="onHu" wx:if="{{canHu}}">胡</button>
+        <button class="action-btn" bindtap="onPass" wx:if="{{canPass}}">过</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 结算弹窗 -->
+  <view class="modal" wx:if="{{showSettlement}}">
+    <view class="modal-content">
+      <view class="modal-title">本局结算</view>
+      <view class="settlement-info">
+        <block wx:for="{{players}}" wx:key="index">
+          <view class="player-settlement">
+            <text>{{item.name}}</text>
+            <text class="{{item.roundScore >= 0 ? 'positive' : 'negative'}}">
+              {{item.roundScore >= 0 ? '+' : ''}}{{item.roundScore}}
+            </text>
+          </view>
+        </block>
+      </view>
+      <button class="modal-btn" bindtap="nextRound">继续</button>
+    </view>
+  </view>
+</view>

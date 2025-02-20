@@ -1,0 +1,16 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/game/game"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1a6840",
+    "navigationBarTitleText": "麻将游戏",
+    "navigationBarTextStyle": "white"
+  },
+  "pageOrientation": "landscape",
+  "resizable": true,
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

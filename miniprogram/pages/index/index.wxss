@@ -1,0 +1,79 @@
+.container {
+  padding: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #2C8A43;
+  margin-bottom: 60rpx;
+  text-shadow: 2rpx 2rpx 4rpx rgba(0,0,0,0.1);
+}
+
+.settings-panel {
+  width: 90%;
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+  margin-bottom: 60rpx;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-item text {
+  color: #333;
+  font-size: 32rpx;
+}
+
+.picker {
+  color: #2C8A43;
+  font-size: 32rpx;
+  padding: 10rpx 20rpx;
+  background: #f8f8f8;
+  border-radius: 8rpx;
+  min-width: 160rpx;
+  text-align: center;
+}
+
+.button-group {
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+}
+
+.start-button, .rules-button {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  border: none;
+}
+
+.start-button {
+  background: #2C8A43;
+  color: white;
+}
+
+.rules-button {
+  background: white;
+  color: #2C8A43;
+  border: 2rpx solid #2C8A43;
+}

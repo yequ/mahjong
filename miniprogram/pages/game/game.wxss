@@ -1,0 +1,510 @@
+.game-container {
+  width: 100vw;
+  height: 100vh;
+  background-color: #1a6840;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-table {
+  position: relative;
+  width: 90vw;
+  height: 90vh;
+  box-sizing: border-box;
+}
+
+/* 玩家区域布局 */
+.player {
+  position: absolute;
+  width: 260px;
+  transition: all 0.3s ease;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+/* 当前玩家高亮 */
+.active-player {
+  box-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
+  z-index: 1;
+}
+
+/* 自家（南） */
+.player-south {
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  z-index: 10;
+}
+
+/* 对家（北） */
+.player-north {
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+}
+
+/* 上家（东） */
+.player-east {
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+}
+
+/* 下家（西） */
+.player-west {
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+}
+
+/* 玩家信息样式 */
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.direction-tag {
+  background-color: #1a6840;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.dealer-tag {
+  background-color: #ff4444;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* 牌的样式 */
+.tiles-container {
+  display: flex;
+  gap: 2px;
+  margin: 10px 0;
+}
+
+/* 横向牌的样式（南北家） */
+.horizontal-tiles {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.horizontal-tiles .tile {
+  width: 30px;
+  height: 42px;
+  margin-right: -10px;
+  transition: transform 0.2s;
+}
+
+.horizontal-tiles .tile:last-child {
+  margin-right: 0;
+}
+
+.horizontal-tiles .tile:hover {
+  transform: translateY(-10px);
+}
+
+/* 竖向牌的样式（东西家） */
+.vertical-tiles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vertical-tiles .tile {
+  width: 42px;
+  height: 30px;
+  margin-bottom: -10px;
+  transform: rotate(90deg);
+}
+
+.vertical-tiles .tile:last-child {
+  margin-bottom: 0;
+}
+
+/* 牌河样式 */
+.discard-area {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  margin: 10px 0;
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  min-height: 80px;
+}
+
+.player-east .discard-area,
+.player-west .discard-area {
+  grid-template-columns: repeat(3, 1fr);
+  min-height: 120px;
+  width: 100px;
+}
+
+/* 牌的基本样式 */
+.tile {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  user-select: none;
+}
+
+.tile.selected {
+  transform: translateY(-10px);
+  border-color: #ff4444;
+  box-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+}
+
+.back-tile {
+  background-color: #1a6840;
+  color: transparent;
+}
+
+/* 状态栏样式 */
+.game-info {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 15px;
+  border-radius: 8px;
+  color: white;
+  min-width: 200px;
+}
+
+.status-bar {
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 10px;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.status-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.status-value {
+  font-weight: bold;
+}
+
+.status-value.warning {
+  color: #ff4444;
+  animation: blink 1s infinite;
+}
+
+.status-value.highlight {
+  color: #ffeb3b;
+}
+
+.turn-indicator {
+  margin-left: 5px;
+  font-size: 12px;
+  color: #4CAF50;
+  animation: ellipsis 1.5s infinite;
+}
+
+/* 动画效果 */
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+@keyframes ellipsis {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+  100% { content: ''; }
+}
+
+/* 结算弹窗 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 300px;
+}
+
+.modal-title {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.settlement-info {
+  margin-bottom: 20px;
+}
+
+.player-settlement {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.positive {
+  color: #2ecc71;
+}
+
+.negative {
+  color: #e74c3c;
+}
+
+.modal-btn {
+  width: 100%;
+  background-color: #1a6840;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+/* 游戏状态样式 */
+.game-info {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  border-radius: 8px;
+  color: white;
+  min-width: 200px;
+}
+
+.status-bar {
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 10px;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.status-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.status-value {
+  font-weight: bold;
+}
+
+.status-value.warning {
+  color: #ff4444;
+  animation: blink 1s infinite;
+}
+
+.action-info {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 14px;
+  color: #ffeb3b;
+}
+
+.round-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.wind-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+/* 中央区域 */
+.center-area {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  text-align: center;
+}
+
+.draw-countdown {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.game-over-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 80%;
+  max-width: 300px;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.modal-body {
+  margin-bottom: 20px;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-around;
+}
+
+.modal-btn {
+  padding: 8px 20px;
+  background-color: #2C8A43;
+  color: white;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* 开始游戏界面 */
+.start-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.start-panel {
+  background-color: white;
+  border-radius: 12px;
+  padding: 30px;
+  width: 80%;
+  max-width: 400px;
+}
+
+.start-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #1a6840;
+  margin-bottom: 20px;
+}
+
+.game-settings {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.start-btn {
+  background-color: #1a6840;
+  color: white;
+  border: none;
+  padding: 12px 0;
+  border-radius: 6px;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.back-btn {
+  background-color: #f5f5f5;
+  color: #666;
+  border: none;
+  padding: 12px 0;
+  border-radius: 6px;
+  font-size: 18px;
+}
+
+.start-btn:active {
+  background-color: #145233;
+}
+
+.back-btn:active {
+  background-color: #e0e0e0;
+}
